@@ -1,0 +1,174 @@
+:global{
+  .search_cart{
+    overflow: auto;
+    top: 0;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    .search_cart_Search {
+      background-image: linear-gradient(90deg, #FA9850 3%, #FF6262 100%);
+      height: 174px;
+      position: relative;
+      .am-search {
+        height: 94px;
+        padding: 19px 31px;
+        .am-search-input {
+          background: rgb(235, 236, 241);
+          height: 56px;
+          input{
+            height: 56px;
+          }
+        }
+      }
+      .am-search-input .am-search-synthetic-ph {
+        text-align: left;
+        background: #fff;
+        text-indent: 1em;
+        height: 56px;
+        line-height: 56px;
+        font-size: 12px;
+      }
+      .crosswiseMeun{
+        /*
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top:.94px;
+        */
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling:auto;
+        a{
+          height: 80px;
+          line-height: 80px;
+          margin: 0 40px;
+          font-size: 30px;
+          color: #fff;
+          cursor: pointer;
+        }
+        .active{
+          position: relative;
+          &:after{
+            content: "";
+            height: 10px;
+            border-radius: 2px;
+            background: #FEDA58;
+            position: absolute;
+            bottom: 22px;
+            width: 130%;
+            left: -15%;
+          }
+        }
+      }
+    }
+    .search-cart__content{
+    .null{
+      margin: 0 auto;
+      img{
+        width: 20px;
+        padding-top: 10px;
+      }
+      text-align: center;
+      .title{
+        padding-top: 10px;
+        color: #999;
+        font-size: 32px;
+      }
+    }
+    flex: 1;
+    display: flex;
+    height: calc(100% - 170px);
+    .am-list-body::before {
+      height: 0;
+    }
+    .search-cart__content-menu {
+      width: 200px;
+      height: 100%;
+      background: rgb(235, 236, 241);
+      overflow: auto;
+      .am-list-item {
+        border-left: 8px solid rgb(235, 236, 241);
+        padding-left: 15px;
+      }
+      .am-list-content {
+        font-size: 14px !important;
+      }
+      .am-sub-menu-item-selected {
+        border-left: 8px solid #FF6262;
+        background: #fff;
+        .am-list-content {
+          color: rgb(32, 5, 5) !important;
+          color: #FF6262 !important;
+        }
+        .am-radio-inner {
+          display: none;
+        }
+      }
+      .am-flexbox .am-flexbox-item:last-child {
+        background: #EDEDED;
+      }
+      .am-flexbox .am-flexbox-item:first-child .am-list .am-list-body {
+        background: rgb(235, 236, 241);
+      }
+      .am-flexbox .am-flexbox-item:last-child .am-list .am-list-item {
+        background: rgb(235, 236, 241);
+      }
+      .am-flexbox .am-flexbox-item:last-child .am-list .am-sub-menu-item-selected {
+        background: #fff;
+      }
+
+    }
+    .search-cart__content-tab {
+      flex: 1;
+      display: flex;
+      flex-flow: wrap;
+      align-content: flex-start;
+      background: #fff;
+      overflow: auto;
+      .serch-cart__content-tab__sub {
+        width: 100%;
+        height: 44px;
+        padding-left: 80px;
+        position: relative;
+        .sub-number {
+          height: 30px;
+          width: 30px;
+          background: #333;
+          position: absolute;
+          left: 30px;
+          top:50%;
+          transform: translateY(-50%);
+          color: #999;
+          text-align: center;
+          background: url(https://res.zudeapp.com/recycle/recycleH5_24.png) no-repeat center;
+          background-size: .3px .3px;
+          line-height: .31px;
+          font-family:"DINPro-Bold";
+        }
+        .sub-numberBg01{
+          background: url(https://res.zudeapp.com/recycle/recycleH5_21.png) no-repeat center;
+          background-size: .3px .3px;
+          color: #fff;
+        }
+        .sub-numberBg02{
+          background: url(https://res.zudeapp.com/recycle/recycleH5_22.png) no-repeat center;
+          background-size: .3px .3px;
+          color: #fff;
+        }
+        .sub-numberBg03{
+          background: url(https://res.zudeapp.com/recycle/recycleH5_23.png) no-repeat center;
+          background-size: .3px .3px;
+          color: #fff;
+        }
+        .sub-name {
+          text-align: left;
+          height: 100%;
+          line-height: 44px;
+        }
+      }
+    }
+  }
+  }
+}
