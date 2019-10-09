@@ -3,7 +3,7 @@
  */
 import React from 'react';
 
-export default class UmiReactTitle extends React.Component {
+export default class UmiReactTitle extends React.PureComponent {
   componentDidMount() {
     document.title = this.props.route._title;
   }
@@ -14,7 +14,7 @@ export default class UmiReactTitle extends React.Component {
         id: item.trim(),
         defaultMessage: item.trim(),
       });
-    })
+    });
     return title.join(separator);
   }
   componentWillUnmount() {

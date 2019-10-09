@@ -3,9 +3,10 @@ import { Toast, Modal } from 'antd-mobile';
 import initWx from '@/utils/wx';
 // 调试神器（url上加上isDebug=true进入调试状态）
 import debug from '@/utils/debug';
-import { title, isPwa } from 'config/defaultSetting'
-
+import { title, isPwa } from 'config/defaultSetting';
 import 'antd-mobile/dist/antd-mobile.less';
+import '@/common/styles/reset.less';
+import '@/common/styles/common.less';
 
 // 微信环境
 function isWeixn() {
@@ -13,25 +14,26 @@ function isWeixn() {
   return ua.includes('micromessenger');
 }
 
-if (!isWeixn()) { // 需要在微信端运行的时候 开启下面的注释
+if (!isWeixn()) {
+  // 需要在微信端运行的时候 开启下面的注释
   // alert('请在微信客户端打开');
   // window.location.replace('#/404');
 } else {
-  debug().then(() => {
-    initWx({
-      title: '分享标题',
-      imgUrl: '', // 分享图标
-      isNeedLogin: true,
-      desc: '分享描述',
-      openid: process.env.NODE_ENV === 'development' ? 'oEgayjggrU06oORZJVeFUJ_KF1Mk' : undefined,
-    });
-  });
+  // debug().then(() => {
+  //   initWx({
+  //     title: '分享标题',
+  //     imgUrl: '', // 分享图标
+  //     isNeedLogin: true,
+  //     desc: '分享描述',
+  //     openid: process.env.NODE_ENV === 'development' ? 'oEgayjggrU06oORZJVeFUJ_KF1Mk' : undefined,
+  //   });
+  // })
 }
 if (isPwa) {
   // Notify user if offline now
   window.addEventListener('sw.offline', () => {
     Toast.offline('当前处于离线状态');
-  })
+  });
 
   // Pop up a prompt on the page asking the user if they want to use the latest version
   window.addEventListener('sw.updated', e => {
@@ -67,5 +69,5 @@ if (isPwa) {
         },
       },
     ]);
-  })
+  });
 }

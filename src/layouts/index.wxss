@@ -53,14 +53,14 @@
   animation-name: fadeOutRight;
 }
 :global(.transitionWrapper-enter.transitionWrapper-enter-active) {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   animation-fill-mode: both;
   animation-name: fadeInRight;
 }
 :global(.transitionWrapper-leave.transitionWrapper-leave-active) {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   animation-fill-mode: both;
-  animation-name: fadeOutLeft;
+  animation-name: fadeOutRight;
 }
 .transitionWrapper {
   position: relative;

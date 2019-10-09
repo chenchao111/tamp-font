@@ -1,10 +1,10 @@
 // https://umijs.org/config/
 import pageRoutes from './router.config';
-import theme from '../src/theme';
+import { theme } from './defaultSetting';
 import webpackPlugin from './plugin.config';
-import pxToViewPort from './pxtoviewport'
-import { title } from './defaultSetting'
-const path = require('path')
+import pxToViewPort from './pxtoviewport';
+import { title } from './defaultSetting';
+const path = require('path');
 
 const plugins = [
   [
@@ -19,7 +19,7 @@ const plugins = [
         hmr: true,
       },
       dynamicImport: {
-        loadingComponent: './components/PageLoading/index',
+        // loadingComponent: './components/PageLoading/index',
         webpackChunkName: true,
       },
       pwa: {
@@ -49,8 +49,8 @@ const plugins = [
 ];
 export default {
   // add for transfer to umi
-  base: '',
-  publicPath: '',
+  base: 'cfvd/tamp-front',
+  publicPath: '//i0.jrjimg.cn/zqt-red-1000/focus/tamp-front/',
   define: {
     APP_TYPE: process.env.APP_TYPE || '',
   },
@@ -62,6 +62,7 @@ export default {
   // Theme for antd-mobile
   // https://mobile.ant.design/docs/react/customize-theme-cn
   theme: {
+    hd: '2px',
     'brand-primary': theme.primaryColor,
     'brand-primary-tap': theme.brandPrimaryTap,
   },
@@ -90,13 +91,13 @@ export default {
     models: path.resolve(__dirname, '../src/models'),
     images: path.resolve(__dirname, '../src/assets'),
     config: path.resolve(__dirname, '../config'),
-    '@': path.resolve(__dirname, '../src')
+    '@': path.resolve(__dirname, '../src'),
   },
   proxy: {
-    "/api": {
-      "target": 'http://10.66.82.99:8080',
-      "changeOrigin": true,
-      "pathRewrite": { "^/api" : "/api" }
+    '/api': {
+      target: 'http://10.66.82.99:8080',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '/api' },
     },
     '/server/api/': {
       changeOrigin: true,
@@ -114,8 +115,5 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  extraPostCSSPlugins: [
-    pxToViewPort
-  ]
+  extraPostCSSPlugins: [pxToViewPort],
 };
-

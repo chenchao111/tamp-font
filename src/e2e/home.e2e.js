@@ -1,6 +1,6 @@
 const BASE_URL = `http://localhost:${process.env.PORT || 8080}`;
 
-describe('Homepage', () => {
+describe('homePage', () => {
   beforeAll(async () => {
     jest.setTimeout(1000000);
   });

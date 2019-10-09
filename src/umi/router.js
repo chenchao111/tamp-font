@@ -57,14 +57,13 @@ const routes = [
           ? _dvaDynamic({
               app: require('@tmp/dva').getApp(),
               models: () => [
-                import(/* webpackChunkName: 'p__home__models__home.js' */ '/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/pages/home/models/home.js').then(
-                  m => {
-                    return { namespace: 'home', ...m.default };
-                  },
-                ),
+                import(
+                  /* webpackChunkName: 'p__home__models__home.js' */ '/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/pages/home/models/home.js'
+                ).then(m => {
+                  return { namespace: 'home', ...m.default };
+                }),
               ],
-              component: () =>
-                import(/* webpackChunkName: "p__home__index" */ '../home/index.js'),
+              component: () => import(/* webpackChunkName: "p__home__index" */ '../home/index.js'),
               LoadingComponent: require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/components/PageLoading/index')
                 .default,
             })
@@ -77,8 +76,7 @@ const routes = [
         exact: true,
         component: __IS_BROWSER
           ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__index" */ '../index.js'),
+              component: () => import(/* webpackChunkName: "p__index" */ '../index.js'),
               LoadingComponent: require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/components/PageLoading/index')
                 .default,
             })
@@ -107,14 +105,13 @@ const routes = [
           ? _dvaDynamic({
               app: require('@tmp/dva').getApp(),
               models: () => [
-                import(/* webpackChunkName: 'p__my__models__my.js' */ '/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/pages/my/models/my.js').then(
-                  m => {
-                    return { namespace: 'my', ...m.default };
-                  },
-                ),
+                import(
+                  /* webpackChunkName: 'p__my__models__my.js' */ '/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/pages/my/models/my.js'
+                ).then(m => {
+                  return { namespace: 'my', ...m.default };
+                }),
               ],
-              component: () =>
-                import(/* webpackChunkName: "p__my__index" */ '../my/index.js'),
+              component: () => import(/* webpackChunkName: "p__my__index" */ '../my/index.js'),
               LoadingComponent: require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/components/PageLoading/index')
                 .default,
             })
@@ -127,7 +124,7 @@ const routes = [
           React.createElement(
             require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
               .default,
-            { pagesPath: 'src/pages', hasRoutesInConfig: true },
+            { pagesPath: 'src/pages', hasRoutesInConfig: true }
           ),
         _title: 'umi-dva-antd-mobile',
         _title_default: 'umi-dva-antd-mobile',
@@ -141,7 +138,7 @@ const routes = [
       React.createElement(
         require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
           .default,
-        { pagesPath: 'src/pages', hasRoutesInConfig: true },
+        { pagesPath: 'src/pages', hasRoutesInConfig: true }
       ),
     _title: 'umi-dva-antd-mobile',
     _title_default: 'umi-dva-antd-mobile',
@@ -153,7 +150,7 @@ plugins.applyForEach('patchRoutes', { initialValue: routes });
 
 export { routes };
 
-export default class RouterWrapper extends React.Component {
+export default class RouterWrapper extends React.PureComponent {
   unListen = () => {};
 
   constructor(props) {

@@ -8,6 +8,7 @@ html {
 
 body {
   font-size: 12px;
+  font-family: 'Microsoft YaHei', '微软雅黑', tahoma, Helvetica, arial, sans-serif, simsun, '宋体';
 }
 
 body,
@@ -57,14 +58,15 @@ li {
 a {
   text-decoration: none;
 }
+a:link,
+a:visited {
+  color: #000;
+  text-decoration: none;
+}
 
 img {
   border: none;
   vertical-align: top;
-}
-
-table {
-  border-collapse: collapse;
 }
 
 textarea {
@@ -111,7 +113,7 @@ html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 /* iphonex 安全区域 */
@@ -137,7 +139,3 @@ body {
   display: table;
   clear: both;
 }
-.am-tab-bar-bar {
-  height: 100px !important;
-}
-

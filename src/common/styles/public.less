@@ -1,0 +1,47 @@
+@golden: #e3a952;
+@asset_url: '../../assets';
+.color {
+  &-golden {
+    color: #e3a952;
+  }
+}
+.bg-color {
+  &-golden {
+    color: #e3a952;
+  }
+}
+.text-align {
+  &-center {
+    text-align: center;
+  }
+  &-left {
+    text-align: left;
+  }
+  &-right {
+    text-align: right;
+  }
+}
+.margin(@direction, @space) when (@direction = left) {
+  margin-left: @space;
+}
+.margin(@direction, @space) when (@direction = right) {
+  margin-right: @space;
+}
+.margin(@direction, @space) when (@direction = top) {
+  margin-top: @space;
+}
+.margin(@direction, @space) when (@direction = bottom) {
+  margin-bottom: @space;
+}
+.margin_left(@space:10px) {
+  margin-left: @space;
+}
+.margin_right(@space:10px) {
+  margin-right: @space;
+}
+.margin_top(@space:10px) {
+  margin-top: @space;
+}
+.margin_bottom(@space:10px) {
+  margin-bottom: @space;
+}

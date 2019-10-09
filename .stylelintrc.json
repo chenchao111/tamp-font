@@ -4,6 +4,26 @@
     "declaration-empty-line-before": null,
     "no-descending-specificity": null,
     "selector-pseudo-class-no-unknown": null,
-    "selector-pseudo-element-colon-notation": null
+    "selector-pseudo-element-colon-notation": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "no-duplicate-selectors": null,
+    "comment-empty-line-before": null,
+    "box-flex": null,
+    "vars-on-top": null,
+    "operator-assignment": null,
+    "prefer-template": null,
+    "no-unused-vars": null,
+    "global-require": null,
+    "eqeqeq": null,
+    "no-else-return": null,
+    "lines-between-class-members": null,
+    "prefer-destructuring": null,
+    "import/order": null,
+    "no-shadow": null,
+    "no-lonely-if": null,
+    "compat/compat": null,
+    "consistent-return": null,
+    "react/jsx-closing-tag-location": null,
+    "no-empty": null
   }
 }

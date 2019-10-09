@@ -1,321 +1,349 @@
-import React, { Component } from 'react';
+// 第三方
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import './index.less';
 import classNames from 'classnames';
-import { Toast, Modal, Button, List } from 'antd-mobile';
-import { CSSTransition } from 'react-transition-group';
 import router from 'umi/router';
-import { baseUrl } from '@/utils/baseServer';
+import { InputItem, Modal } from 'antd-mobile';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+// 自己
+import { str as Str } from '@/utils';
+import { message } from '@/common/js';
+import { MyModals } from '@/components';
+import './index.less';
+import Init from '@/global/init';
+import { login as LoginApi } from '@/services';
 
-// @connect(({ login }) => ({ login }))
-class LoginNew extends React.Component {
+const isIPhone = new RegExp('\\biPhone\\b|\\biPod\\b', 'i').test(window.navigator.userAgent);
+let wrapProps;
+if (isIPhone) {
+  wrapProps = {
+    onTouchStart: e => e.preventDefault(),
+  };
+}
+
+@connect(({ login }) => ({
+  ...login,
+}))
+class Login extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      phone: '', // 电话
-      phoneIsFocus: false, // 是否获取焦点
-      phoneError: false, // 电话是否格式错误
-      imgCode: '', // 图形验证码
-      imgCodeIsFocus: false, // 是否获取焦点
-      imgCodeError: false, // 图形验证码是否图形错误
-      phoneCode: '', // 短信验证码
-      phoneCodeIsFocus: false, // 是否获取焦点
-      codeText: '获取验证码',
-      isWait: false, // 是否在倒计时
-      codeImageUrl: '', // 验证码图片
-      visible: false
-    };
-    this.getCode = this.getCode.bind(this)
-    this.submit = this.submit.bind(this)
+    this.state = {};
   }
-
-  componentWillMount() {
-    // 获取图形验证码
-    this.refreshCodeImage();
-
-  }
-
-  // 协议弹窗
-  showProtocol() {
-    this.setState({
-      visible: true
-    });
-  }
-  close(v) {
-    this.setState({
-      visible: false
-    });
-  }
-  onClose = key => () => {
-    this.setState({
-      [key]: false,
-    });
-  }
-
-  /**
-   * 刷新图形验证码
-   */
-  refreshCodeImage() {
-    console.log('刷新图形验证码！！')
-  }
-
-  /**
-   * 倒计时
-   */
-  setTime() {
-    this.setState({ isWait: true });
-    let countdown = 60
-    this.setState({ codeText: countdown + 's' });
-    this.timer = setInterval(() => {
-      if (countdown === 0) {
-        this.setState({
-           codeText: '重新获取',
-           isWait: false
-        });
-        this.refreshCodeImage();
-        clearInterval(this.timer);
-      } else {
-        countdown--
-        this.setState({ codeText: countdown + 's' });
-      }
-    }, 1000)
-  }
-
-  /**
-   * 获取短信验证码
-   *  @return {Boolean} 当信息不完整时退出
-   */
-  getCode() {
-    const { phone, phoneCode, imgCode } = this.state;
+  // input改变事件
+  handleInputChange = (key, val) => {
     const { dispatch } = this.props;
-    if (this.state.isWait) {
-      return false
+    dispatch({
+      type: 'login/handleInputChange',
+      payload: {
+        [key]: val,
+      },
+    });
+  };
+  // 图片验证码
+  handleImgCodeUrl = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/imgCodeUrlChange',
+      payload: {
+        imgCodeUrl: `//sso.jrj.com.cn/service/create?_=${Math.random()}}`,
+      },
+    });
+  };
+  // 获取手机验证码按钮被点击
+  handleMobileCodeClick = () => {
+    let { imgCodeCss, timeId, mobile, imgCode, mobileCode, dispatch } = this.props;
+    mobile = Str.trimStr(mobile);
+    // 手机号校验
+    if (!Str.mobileCheck(mobile)) {
+      dispatch({
+        type: 'login/mobileCheck',
+        payload: {
+          isError: true,
+          errorInfo: '请输入正确的手机号',
+        },
+      });
+      return;
     }
-    if (!this.checkData()) return
-
-    Toast.success('验证码发送成功', 2);
-    // 接口成功发送验证码并倒计时
-    this.setTime()
-  }
-
-  /**
-   * 登录
-   * @return {Boolean} 当信息不完整时退出
-   */
-  submit() {
-    router.push('/home')
-  }
-
-  /**
-   * 校验表单
-   * @return {Boolean} 当信息不完整时退出
-   */
-  checkData() {
-    if (!this.state.phone) {
-      Toast.fail('请输入手机号码', 2);
-      return false
-    }
-    if (!/^1[3456789]\d{9}$/.test(this.state.phone)) {
-      Toast.fail('请输入正确的手机号', 2);
-      this.setState({ phoneError: true });
-      return false
-    }
-    if (!this.state.imgCode) {
-      Toast.fail('请输入图形验证码', 2);
-      return false
-    }
-    if (!/^[a-zA-Z0-9]{4,5}$/.test(this.state.imgCode)) {
-      Toast.fail('图形验证码不正确', 2);
-      this.setState({ imgCodeError: true });
-      return false
-    }
-    return true
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // watch监听实时校验表单
-    if (prevState.phone !== this.state.phone) {
-      if (/^1[3456789]\d{9}$/.test(this.state.phone)) {
-        this.setState({ phoneError: false });
+    // 图形验证码校验
+    if (!imgCode || imgCode.length !== 4) return;
+    // 倒计时进行时校验
+    if (imgCodeCss) return; // 正在倒计时不能点击
+    dispatch({
+      type: 'login/handleQueryCode',
+      payload: {
+        mobile,
+        imgCode,
+      },
+    });
+    clearInterval(timeId); // 清除定时器
+    let num = 5;
+    dispatch({
+      type: 'login/countDown',
+      payload: {
+        imgCodeCss: true,
+        imgCodeInfo: `${num}s`,
+      },
+    });
+    timeId = setInterval(() => {
+      dispatch({
+        type: 'login/countDown',
+        payload: {
+          imgCodeCss: true,
+          imgCodeInfo: `${--num}s`,
+        },
+      });
+      if (num <= 0) {
+        dispatch({
+          type: 'login/countDown',
+          payload: {
+            imgCodeCss: false,
+            imgCodeInfo: '重发验证码',
+          },
+        });
+        clearInterval(timeId);
+        return;
       }
-    }
-    if (prevState.imgCode !== this.state.imgCode) {
-      if (/^[0-9]{4}$/.test(this.state.imgCode)) {
-        this.setState({ imgCodeError: false });
+    }, 1000);
+  };
+  // 登录按钮被点击
+  handleLoginClick = async () => {
+    try {
+      let {
+        history: { location },
+        mobile,
+        imgCode,
+        mobileCode,
+        dispatch,
+      } = this.props;
+      mobile = Str.trimStr(mobile);
+      if (!Str.mobileCheck(mobile)) {
+        this.setState({
+          isError: true,
+          errorInfo: '请输入正确的手机号',
+        });
+        return;
       }
+      // 图形验证码校验
+      if (!imgCode || imgCode.length !== 4) return;
+      // 手机验证码校验
+      if (!mobileCode || mobileCode.length !== 4) return;
+      const { tgId, checkLogin, updateVisitTgInfo } = new Init();
+      const loginInfo = await LoginApi.loginPlatform({ mobile, verifyCode: mobileCode });
+      if (parseInt(loginInfo.resultCode) === 0) {
+        // 手机号和微信绑定成功
+        const { isLogin, userid } = await checkLogin(); // 种cookie
+        if (isLogin) {
+          // 登录成功 更新userid
+          dispatch({
+            type: 'global/setUserId',
+            payload: {
+              userid,
+            },
+          });
+        }
+        const isUpdate = await updateVisitTgInfo(tgId()); // 更新访问记录
+        const { backUrl } = location.query;
+        router.replace(backUrl);
+      } else if (parseInt(loginInfo.resultCode) == 4018) {
+        // 需要合并账户
+        this.handleIsModal(true, res.passportId);
+      }
+    } catch (error) {
+      console.error(error);
     }
-  }
-
+  };
+  // 合并账号
+  mergeMobile = async () => {
+    try {
+      const {
+        history: { location },
+        dispatch,
+        passportId,
+      } = this.props;
+      const { tgId, checkLogin, updateVisitTgInfo } = new Init();
+      const merge = await mergeWechatAndPhone({
+        passportId,
+      });
+      const { isLogin, userid } = await checkLogin(); // 种cookie
+      if (isLogin) {
+        // 登录成功 更新userid
+        dispatch({
+          type: 'global/setUserId',
+          payload: {
+            userid,
+          },
+        });
+      }
+      const isUpdate = await updateVisitTgInfo(tgId()); // 更新访问记录
+      const { backUrl } = location.query;
+      router.replace(backUrl);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  // 关闭或显示协议内容
+  handleMask = isAgreement => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/mask',
+      payload: {
+        isAgreement,
+      },
+    });
+  };
+  // 关闭/显示 合并账户弹窗
+  handleIsModal = (isModal, passportId) => {
+    const { dispatch } = this.props;
+    if (isModal) {
+      dispatch({
+        type: 'login/modal',
+        payload: {
+          isModal,
+          passportId,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'login/modal',
+        payload: {
+          isModal,
+        },
+      });
+    }
+  };
   render() {
-    const {phone, phoneIsFocus, phoneError, imgCode, codeImageUrl, imgCodeIsFocus, imgCodeError, phoneCode, phoneCodeIsFocus, codeText, isWait} = this.state;
-    return (
-      <div className="login-bg">
-        <div className="logo-wrap">
-          <div className="logo"></div>
-          <div className="welcome-wrap">
-            <div className="hello">您好!</div>
-            <div className="welcome">欢迎来到<span>UMI项目</span></div>
-          </div>
-        </div>
-        <div className="form-wraper">
-          <div className={classNames('input-wrap')}>
-            <CSSTransition
-              in={phone.length > 0}
-              timeout={400}
-              classNames="fade"
-              unmountOnExit
-            >
-              <span>手机号</span>
-            </CSSTransition>
-            <CSSTransition
-              in={phone.length > 0}
-              timeout={400}
-              classNames="input"
-            >
-            <input
-              className={ phoneError ? 'error' : ''}
-              value={phone}
-              onChange={e => {
-                if(e.target.value.length <= 11) {
-                  this.setState({ phone: e.target.value })
-                }
-              }}
-              onFocus={() => {
-                this.setState({ phoneIsFocus: true });
-              }}
-              onBlur={() => {
-                this.setState({ phoneIsFocus: false });
-              }}
-              type="text"
-              placeholder="请输入手机号"/>
-            </CSSTransition>
-          </div>
-          <Line show={phoneIsFocus}/>
-          <div className={classNames('input-wrap-flex', 'margin-top-20')}>
-            <div className="left">
-              <CSSTransition
-                in={imgCode.length > 0}
-                timeout={400}
-                classNames="fade"
-                unmountOnExit
-              >
-                <span>图形验证码</span>
-              </CSSTransition>
-              <CSSTransition
-                in={imgCode.length > 0}
-                timeout={400}
-                classNames="input"
-              >
-              <input
-                className={ imgCodeError ? 'error' : ''}
-                value={imgCode}
-                onChange={e => {
-                  this.setState({ imgCode: e.target.value });
-                }}
-                onFocus={() => {
-                  this.setState({ imgCodeIsFocus: true });
-                }}
-                onBlur={() => {
-                  this.setState({ imgCodeIsFocus: false });
-                }}
-                type="text"
-                placeholder="请输入图像验证码"/>
-              </CSSTransition>
-            </div>
-            <div className="right">
-              <img className="img-code" src={require('../../assets/verify-code.jpg')} />
-              <span className="refresh" onClick={() => {this.refreshCodeImage()}}></span>
-            </div>
-          </div>
-          <Line show={imgCodeIsFocus}/>
-          <div className={classNames('input-wrap-flex', 'margin-top-20')}>
-            <div className="left">
-              <CSSTransition
-                in={phoneCode.length > 0}
-                timeout={400}
-                classNames="fade"
-                unmountOnExit
-              >
-                <span>短信验证码</span>
-              </CSSTransition>
-              <CSSTransition
-                in={phoneCode.length > 0}
-                timeout={400}
-                classNames="input"
-              >
-              <input
-                value={phoneCode}
-                onChange={e => {
-                  this.setState({ phoneCode: e.target.value });
-                }}
-                onFocus={() => {
-                  this.setState({ phoneCodeIsFocus: true });
-                }}
-                onBlur={() => {
-                  this.setState({ phoneCodeIsFocus: false });
-                }}
-                type="text"
-                placeholder="请输入短信验证码"/>
-              </CSSTransition>
-            </div>
-            <div className="right">
-              <span className={classNames('code-info', {'gray-info': isWait, 'active-info': codeText === '重新获取'})}
-                    onClick={this.getCode}>{codeText}</span>
-            </div>
-          </div>
-          <Line show={phoneCodeIsFocus}/>
-        </div>
-        <div className="login-wrap">
-          <div className="login" onClick={this.submit}>登录/注册</div>
-        </div>
-        <p className="agree-wrap" onClick={(e) => {
-          this.showProtocol();
-        }}>登录或注册即代表您已同意<span className="agree">《用户注册协议》</span></p>
-        {/*----协议----*/}
-        <Modal
-          popup
-          visible={this.state.visible}
-          animationType="slide-up"
-          className="modal-service"
-          platform={'android'}
-          onClose={this.onClose('visible')}
-          footer={[{ text: '确 定', onPress: () => { console.log('ok'); this.onClose('visible')(); } }]}
+    const {
+      imgCodeCss,
+      imgCodeInfo,
+      isError,
+      errorInfo,
+      mobile,
+      imgCode,
+      mobileCode,
+      imgCodeUrl,
+      isAgreement,
+      isModal,
+    } = this.props;
+    const Logo = () => (
+      <div className={classNames('top-logo')}>
+        <img className={classNames('logo-img')} src={require('../../assets/logo.png')} alt="" />
+      </div>
+    );
+    const LoginBtn = () => (
+      <div className={classNames('login-btn')} onClick={this.handleLoginClick}>
+        确定
+      </div>
+    );
+    const Agreement = () => (
+      <div
+        onClick={() => {
+          this.handleMask(true);
+        }}
+        className={classNames('agreement-info')}
+      >
+        点击确定，即表示阅读并同意
+        <span className={classNames('agreement')}>《用户服务协议》</span>
+      </div>
+    );
+    const MobileInput = () => (
+      <InputItem
+        value={mobile}
+        type="phone"
+        clear
+        placeholder="请输入手机号"
+        className={classNames('input-item', 'my-hairline--bottom')}
+        onChange={val => this.handleInputChange('mobile', val)}
+      >
+        <div className={classNames('input-icon', 'mobile')} />
+      </InputItem>
+    );
+    const ImgCodeInput = () => (
+      <InputItem
+        value={imgCode}
+        clear
+        maxLength="4"
+        placeholder="请输入图形验证码"
+        className={classNames('input-item', 'my-hairline--bottom')}
+        onChange={val => this.handleInputChange('imgCode', val)}
+      >
+        <div className={classNames('input-icon', 'img-code')} />
+        <img
+          onClick={this.handleImgCodeUrl}
+          className={classNames('img-code-change')}
+          src={imgCodeUrl}
+          alt=""
+        />
+      </InputItem>
+    );
+    const MobileCodeInput = () => (
+      <InputItem
+        value={mobileCode}
+        type="number"
+        clear
+        maxLength="4"
+        placeholder="请输入手机验证码"
+        className={classNames('input-item', 'my-hairline--bottom')}
+        onChange={val => this.handleInputChange('mobileCode', val)}
+      >
+        <div className={classNames('input-icon', 'mobile-code')} />
+        <div
+          onClick={this.handleMobileCodeClick}
+          className={classNames(['code-btn', imgCodeCss ? 'code-ing' : 'code-get'])}
         >
-          <div className="modal-coupon-center" style={{height: 360}}>
-            <iframe
-              ref={(f) => {
-                this.iframe = f;
-              }}
-              width="100%"
-              height="100%"
-              frameBorder={0}
-              src="https://umijs.org/zh/guide/"
-            />
+          {imgCodeInfo}
+        </div>
+      </InputItem>
+    );
+    const ErrorDesc = () => <p className={classNames('mobile-desc')}>{isError && errorInfo}</p>;
+    const AgreementContent = () => (
+      <Fragment>
+        <CSSTransition in={isAgreement} timeout={100} classNames="fade" unmountOnExit>
+          <div
+            key={'mask'}
+            className={classNames('mask')}
+            onClick={() => {
+              this.handleMask(false);
+            }}
+          ></div>
+        </CSSTransition>
+        <CSSTransition in={isAgreement} timeout={100} classNames="slide" unmountOnExit>
+          <div key={'content'} className={classNames('content')}>
+            <p dangerouslySetInnerHTML={{ __html: message.content }}></p>
           </div>
-        </Modal>
+        </CSSTransition>
+      </Fragment>
+    );
+    const MyModal = () => (
+      <MyModals
+        visible={isModal}
+        handleVisible={this.handleIsModal}
+        title="您的手机号已被注册，是否<br/>要将当前微信绑定到此手机账户"
+        desc="注：仅合并自选股，其他记录不合并"
+        affirm={{
+          text: '确认合并',
+          callback: this.mergeMobile,
+        }}
+        cancel={{
+          text: '更换绑定手机号',
+        }}
+      />
+    );
+    return (
+      <div className={classNames('login-pages')}>
+        {Logo()}
+        <div className={classNames('login-info')}>
+          {MobileInput()}
+          {ImgCodeInput()}
+          {MobileCodeInput()}
+          {ErrorDesc()}
+        </div>
+        {LoginBtn()}
+        {Agreement()}
+        {AgreementContent()}
+        {MyModal()}
       </div>
     );
   }
 }
 
-// 分割线动画组件
-class Line extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {}
-  }
-  render() {
-    return (
-      <div className="line-wrap">
-        <CSSTransition
-          in={this.props.show}
-          timeout={500}
-          classNames="line"
-        >
-          <div className="line"></div>
-        </CSSTransition>
-      </div>
-    )
-  }
-}
-export default LoginNew
+export default Login;

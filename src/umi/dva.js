@@ -7,7 +7,7 @@
  * dispatch 方法：一个函数，发送 Action 到 State
  */
 import dva from 'dva';
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import createLoading from 'dva-loading';
 import history from '@tmp/history';
 
@@ -30,8 +30,14 @@ export function _onCreate() {
     app.use(plugin);
   });
   // 注册model
-  app.model({ namespace: 'global', ...(require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/models/global.tsx').default) });
-  app.model({ namespace: 'h5', ...(require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/models/h5.tsx').default) });
+  app.model({
+    namespace: 'global',
+    ...require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/models/global.tsx').default,
+  });
+  app.model({
+    namespace: 'h5',
+    ...require('/Users/chenchao/Documents/umi/umi-dva-antd-mobile/src/models/h5.tsx').default,
+  });
   return app;
 }
 
@@ -39,7 +45,7 @@ export function getApp() {
   return app;
 }
 
-export class _DvaContainer extends Component {
+export class _DvaContainer extends PureComponent {
   render() {
     const app = getApp();
     // 注册路由表

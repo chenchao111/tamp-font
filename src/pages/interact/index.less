@@ -1,0 +1,55 @@
+@test_width: 300px;
+@color_yellow: yellow;
+.border {
+  border: solid 5px pink;
+}
+.border_arg(@border_width) {
+  border: solid @border_width #000;
+}
+.border_arg_default(@border_width:5px) {
+  border: solid @border_width blue;
+}
+.triangle(bottom, @w:5px, @c:#ccc) {
+  border-width: @w;
+  border-color: @c transparent transparent transparent;
+  border-style: solid dashed dashed dashed;
+}
+.triangle(top, @w:5px, @c:#ccc) {
+  border-width: @w;
+  border-color: transparent transparent @c transparent;
+  border-style: solid dashed dashed dashed;
+}
+.triangle(left, @w:5px, @c:#ccc) {
+  border-width: @w;
+  border-color: transparent transparent transparent @c;
+  border-style: dashed solid dashed dashed;
+}
+.triangle(right, @w:5px, @c:#ccc) {
+  border-color: transparent @c transparent transparent;
+  border-style: dashed solid dashed dashed;
+}
+.triangle(@_, @w:5px, @c:#ccc) {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  border-width: @w;
+}
+:global {
+  .interact-pages {
+    .box {
+      width: @test_width;
+      height: @test_width;
+      background-color: @color_yellow;
+    }
+    .box2 {
+      .box;
+      // .border;
+      // .border_arg(20px);
+      .border_arg_default();
+      margin-top: 20px;
+    }
+    .sanjiao {
+      .triangle(right, 20px, red);
+    }
+  }
+}

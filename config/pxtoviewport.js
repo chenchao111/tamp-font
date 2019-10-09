@@ -5,7 +5,8 @@ export default pxToViewPort({
   viewportHeight: 1334,
   unitPrecision: 5,
   viewportUnit: 'vw',
-  selectorBlackList: [],
+  selectorBlackList: ['.ignore', '.hairlines'],
   minPixelValue: 1,
   mediaQuery: false,
-})
+  exclude: /(\/|\\)(node_modules)(\/|\\)/,
+});
